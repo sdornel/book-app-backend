@@ -44,7 +44,7 @@ exports.findAll = (req, res) => {
     .catch(err => {
         res.status(500).send({
           message:
-            err.message || "Some error occurred while retrieving tutorials."
+            err.message || "Some error occurred while retrieving books."
         });
     });
 };
@@ -59,7 +59,7 @@ exports.findOne = (req, res) => {
     })
     .catch(err => {
       res.status(500).send({
-        message: "Error retrieving Tutorial with id=" + id
+        message: "Error retrieving Book with id=" + id
       });
     });
 
@@ -75,17 +75,17 @@ exports.update = (req, res) => {
     .then(num => {
         if (num == 1) {
           res.send({
-            message: "Tutorial was updated successfully."
+            message: "Book was updated successfully."
           });
         } else {
           res.send({
-            message: `Cannot update Tutorial with id=${id}. Maybe Tutorial was not found or req.body is empty!`
+            message: `Cannot update Book with id=${id}. Maybe Book was not found or req.body is empty!`
           });
         }
       })
       .catch(err => {
         res.status(500).send({
-          message: "Error updating Tutorial with id=" + id
+          message: "Error updating Book with id=" + id
         });
       });
 };
@@ -100,17 +100,17 @@ exports.delete = (req, res) => {
     .then(num => {
         if (num == 1) {
           res.send({
-            message: "Tutorial was deleted successfully!"
+            message: "Book was deleted successfully!"
           });
         } else {
           res.send({
-            message: `Cannot delete Tutorial with id=${id}. Maybe Tutorial was not found!`
+            message: `Cannot delete Book with id=${id}. Maybe Book was not found!`
           });
         }
       })
       .catch(err => {
         res.status(500).send({
-          message: "Could not delete Tutorial with id=" + id
+          message: "Could not delete Book with id=" + id
         });
       });
 };
@@ -122,17 +122,12 @@ exports.deleteAll = (req, res) => {
         // truncate: false // ???
       })
         .then(nums => {
-          res.send({ message: `${nums} Tutorials were deleted successfully!` });
+          res.send({ message: `${nums} Books were deleted successfully!` });
         })
         .catch(err => {
           res.status(500).send({
             message:
-              err.message || "Some error occurred while removing all tutorials."
+              err.message || "Some error occurred while removing all Books."
           });
         });
 };
-
-// // Find all published Books
-// exports.findAllPublished = (req, res) => {
-  
-// };
