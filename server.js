@@ -4,7 +4,7 @@ const cors = require("cors");
 
 const app = express();
 
-const db = require('./app/models');
+const db = require('./models');
 db.sequelize.sync();
 
 // db.sequelize.sync({ force: true }).then(() => {
