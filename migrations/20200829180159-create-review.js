@@ -14,6 +14,24 @@ module.exports = {
       stars: {
         type: Sequelize.INTEGER
       },
+      userId: {
+        type: Sequelize.INTEGER,
+        onDelete: 'CASCADE',
+        references: {
+          model: 'Users',
+          key: 'id',
+          as: 'userId',
+        }
+      },
+      bookId: {
+        type: Sequelize.INTEGER, // this and the above id might be wrongly done
+        onDelete: 'CASCADE',
+        references: {
+          model: 'Books',
+          key: 'id',
+          as: 'bookId',
+        }
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
