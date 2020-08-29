@@ -1,12 +1,24 @@
-module.exports = (sequelize, Sequelize) => {
-    const Review = sequelize.define("review", {
-      text: {
-        type: Sequelize.TEXT
-      },
-      stars: {
-        type: Sequelize.STRING
-      }
-    });
-  
-    return Review;
+'use strict';
+const {
+  Model
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class Review extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
+    }
   };
+  Review.init({
+    text: DataTypes.STRING,
+    stars: DataTypes.INTEGER
+  }, {
+    sequelize,
+    modelName: 'Review',
+  });
+  return Review;
+};

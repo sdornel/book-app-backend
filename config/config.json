@@ -1,0 +1,19 @@
+{
+  "development": {
+    "database": "books_db_dev_2",
+    "dialect": "postgres"
+  },
+  "test": {
+    "database": "books_db_test_2",
+    "dialect": "postgres"
+  },
+  "production": {
+    "use_env_variable": "DATABASE_URL",
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "rejectUnauthorized": false
+      }
+    }
+  }
+}
