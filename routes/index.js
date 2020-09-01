@@ -18,5 +18,10 @@ router.patch('/reviews/:id', controllers.updateReview)
 router.delete('/reviews/:id', controllers.deleteReview)
 router.post('/reviews', controllers.updateReview)
 
+// router.get('/books', controllers.getAllBooks)
+// router.get('/books/:id', controllers.getBookById)
+// router.patch('/books/:id', controllers.updateBook)
+// router.delete('/books/:id', controllers.deleteBook)
+// router.post('/books', controllers.updateBook)
 
 module.exports = router

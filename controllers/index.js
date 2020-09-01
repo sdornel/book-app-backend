@@ -148,5 +148,11 @@ module.exports = {
     getAllReviews,
     getReviewById,
     updateReview,
-    deleteReview
+    deleteReview,
+
+    createBook,
+    getAllBooks,
+    getBookById,
+    updateBook,
+    deleteBook
 }
