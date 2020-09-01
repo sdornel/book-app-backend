@@ -137,6 +137,16 @@ const deleteReview = async (req, res) => {
     }
 }
 
+const createBook
+
+const getAllBooks
+
+const getBookById
+
+const updateBook
+
+const deleteBook
+
 module.exports = {
     createUser,
     getAllUsers,
