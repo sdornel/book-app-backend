@@ -13,8 +13,10 @@ router.delete('/users/:id', controllers.deleteUser)
 router.post('/users', controllers.createUser)
 
 router.get('/reviews', controllers.getAllReviews)
-router.post('/users/', controllers.updateUser)
-
+router.get('/reviews/:id', controllers.getReviewById)
+router.patch('/reviews/:id', controllers.updateReview)
+router.delete('/reviews/:id', controllers.deleteReview)
+router.post('/reviews', controllers.updateReview)
 
 
 module.exports = router
