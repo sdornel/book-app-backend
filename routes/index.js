@@ -2,7 +2,22 @@ const { Router } = require('express')
 const controllers = require('../controllers')
 const router = Router();
 
+const passport = require('passport')
+const requireSignIn = passport.authenticate('jwt', {session: false})
+
 router.get('/', (req, res) => res.send('This is root!'))
+
+router.get('/sign-up', (req, res) => {
+    res.render('authentication/sign-up')
+})
+
+router.post('sign-up', controllers.signUp)
+
+router.get('/sign-in', (req, res) => {
+    res.render('authentication/sign-in')
+})
+
+router.post('sign-in', requireSignIn, controllers.signIn)
 
 
 router.get('/users', controllers.getAllUsers)

@@ -12,13 +12,13 @@ const app = express();
 app.use(cors()) // use cors
 
 // --------------------------- experimental ---------------------------
-app.use(passport.initialize())
-app.use(passport.session());
+// app.use(passport.initialize())
+// app.use(passport.session());
+// app.post('/login', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login' }));
 // --------------------------- experimental ---------------------------
 
 app.use(bodyParser.json())
 app.use('/api', routes);
 
-app.post('/login', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login' }));
 
 app.listen(PORT, () => console.log(`Listening on port: ${PORT}`))
