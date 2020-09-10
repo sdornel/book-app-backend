@@ -37,13 +37,13 @@ router.get('/reviews', controllers.getAllReviews)
 router.get('/reviews/:id', controllers.getReviewById)
 router.patch('/reviews/:id', controllers.updateReview)
 router.delete('/reviews/:id', controllers.deleteReview)
-router.post('/reviews', controllers.updateReview)
+router.post('/reviews', controllers.createReview)
 
 router.get('/books', controllers.getAllBooks)
 router.get('/books/:id', controllers.getBookById)
 router.patch('/books/:id', controllers.updateBook)
 router.delete('/books/:id', controllers.deleteBook)
-router.post('/books', controllers.updateBook)
+router.post('/books', controllers.createBook)
 
 
 module.exports = router

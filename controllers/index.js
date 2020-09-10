@@ -22,9 +22,9 @@ passport.use(new LocalStrategy(
 ));
 
 const createUser = async (req, res) => {
+    console.log("req", req, "res", res)
     try {
         const user = await User.create(req.body);
-        debugger
         return res.status(201).json({
             user,
         });
@@ -126,6 +126,7 @@ const signUp = (req, res, next) => {
         console.log(body)
         return createUser(body)
         .then((newUser) => {
+            console.log("129", newUser)
             res.json({token: tokenForUser(newUser) })
         })
         .catch((err) => {
@@ -136,6 +137,17 @@ const signUp = (req, res, next) => {
         return next(err)
     })
 }  
+// const createUser = async (req, res) => {
+//     console.log("req", req, "res", res)
+//     try {
+//         const user = await User.create(req.body);
+//         return res.status(201).json({
+//             user,
+//         });
+//     } catch (error) {
+//         return res.status(500).json({ error: error.message })
+//     }
+// }
 
 const verifyUser = async (req, res) => {
     try {
