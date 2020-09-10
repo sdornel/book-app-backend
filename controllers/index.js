@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt')
 
 passport.use(new LocalStrategy(
     function(email, password, done) {
+        console.log("above localstrategy", user)
         User.findOne({ email: email }, function (err, user) {
             console.log("localstrategy", user)
             if (err) { return done(err); }
@@ -22,7 +23,6 @@ passport.use(new LocalStrategy(
 ));
 
 const createUser = async (req, res) => {
-    console.log("req", req, "res", res)
     try {
         const user = await User.create(req.body);
         return res.status(201).json({
