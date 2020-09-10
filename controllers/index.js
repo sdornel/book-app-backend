@@ -5,20 +5,21 @@ const jwt = require('jwt-simple')
 const config = require('../config/config.json')
 const bcrypt = require('bcrypt')
 
-// passport.use(new LocalStrategy(
-//     function(username, password, done) {
-//         User.findOne({ username: username }, function (err, user) {
-//             if (err) { return done(err); }
-//             if (!user) {
-//             return done(null, false, { message: 'Incorrect username.' });
-//             }
-//             if (!user.validPassword(password)) {
-//             return done(null, false, { message: 'Incorrect password.' });
-//             }
-//             return done(null, user);
-//         });
-//     }
-// ));
+passport.use(new LocalStrategy(
+    function(email, password, done) {
+        User.findOne({ email: email }, function (err, user) {
+            console.log("localstrategy", user)
+            if (err) { return done(err); }
+            if (!user) {
+            return done(null, false, { message: 'Incorrect email.' });
+            }
+            if (!user.validPassword(password)) {
+            return done(null, false, { message: 'Incorrect password.' });
+            }
+            return done(null, user);
+        });
+    }
+));
 
 const createUser = async (req, res) => {
     try {
@@ -97,12 +98,12 @@ const deleteUser = async (req, res) => {
 const tokenForUser = (user) => {
     const timestamp = new Date().getTime()
     // how do I get a user object in here
-    // console.log("user", user)
+    // console.log("user", config.secret)
     return jwt.encode({sub: user.id, iat: timestamp}, config.secret)
 }
 
 const signIn = (req, res, next) => {
-    // console.log("got to signin", req.body, req.user, req.query)
+    console.log("got to signin", req.body, req.user, req.query)
     // res.send({ token: tokenForUser(req.user) })
     res.send({ token: tokenForUser(req.query) })
 }
@@ -132,6 +133,26 @@ const signUp = (req, res, next) => {
         return next(err)
     })
 }  
+
+const verifyUser = async (req, res) => {
+    try {
+        const { email } = req.params;
+        const user = await User.findOne({
+            where: { email: email },
+            include: [
+                {
+                    model: Review
+                }
+            ]
+        });
+        if (user) {
+            return res.status(200).json({ user });
+        }
+        return res.status(404).send('User verification failed');
+    } catch (error) {
+        return res.status(500).send(error.message);
+    }
+}
 
 const createReview = async (req, res) => {
     try {
@@ -293,5 +314,6 @@ module.exports = {
     deleteBook,
 
     signUp,
-    signIn
+    signIn,
+    verifyUser
 }

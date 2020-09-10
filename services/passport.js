@@ -12,7 +12,8 @@ const bcrypt = require('bcrypt')
 const localOptions = {usernameField: 'email'}
 
 const localOptions = new LocalStrategy(localOptions, (email, password, done) => {
-    return verifyUser(email)
+    // return verifyUser(email)
+    return getUserById(email)
     .then((validUser) => {
         bcrypt.compare(password, validUser.password)
         .then((validPassword) => {
@@ -33,7 +34,7 @@ const jwtOptions = {
 // create jwt strategy
 
 const jwtLogin = new JwtStrategy(jwtOptions, (payload, done) => {
-    debugger
+    console.log(payload)
     return getUserById(payload.sub)
     .then((foundUser) => {
         if(foundUser){

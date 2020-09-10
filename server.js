@@ -14,7 +14,7 @@ app.use(cors()) // use cors
 // --------------------------- experimental ---------------------------
 app.use(passport.initialize())
 app.use(passport.session());
-app.post('/login', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login' }));
+app.post('/sign-in', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/sign-in' }));
 // --------------------------- experimental ---------------------------
 
 app.use(bodyParser.json())

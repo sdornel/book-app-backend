@@ -21,7 +21,7 @@ router.get('/sign-in', controllers.signIn)
     // res.render('authentication/sign-in')
 // })
 
-router.post('sign-in', requireSignIn, controllers.signIn)
+router.post('/sign-in', requireSignIn, controllers.signIn)
 
 
 router.get('/users', controllers.getAllUsers)
