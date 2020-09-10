@@ -1,6 +1,9 @@
 const { User, Review, Book } = require('../models');
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy;
+const jwt = require('jwt-simple')
+const config = require('../config/config.json')
+const bcrypt = require('bcrypt')
 
 // passport.use(new LocalStrategy(
 //     function(username, password, done) {
@@ -45,7 +48,6 @@ const getAllUsers = async (req, res) => {
 const getUserById = async (req, res) => {
     try {
         const { id } = req.params;
-        debugger
         const user = await User.findOne({
             where: { id: id },
             include: [
@@ -54,7 +56,6 @@ const getUserById = async (req, res) => {
                 }
             ]
         });
-        debugger
         if (user) {
             return res.status(200).json({ user });
         }
@@ -93,7 +94,44 @@ const deleteUser = async (req, res) => {
     }
 };
 
+const tokenForUser = (user) => {
+    const timestamp = new Date().getTime()
+    // how do I get a user object in here
+    // console.log("user", user)
+    return jwt.encode({sub: user.id, iat: timestamp}, config.secret)
+}
 
+const signIn = (req, res, next) => {
+    console.log("got to signin", req.body, req.user, req.query)
+    // res.send({ token: tokenForUser(req.user) })
+    res.send({ token: tokenForUser(req.query) })
+}
+
+const signUp = (req, res, next) => {
+
+    const {name, email, password} = req.body
+    const saltRounds = 12
+
+    if(!email || !password) {
+        res.status(422).send({error: 'You must provide both an email and password'})
+    }
+    // see if user exists with given email address
+    bcrypt.hash(password, saltRounds)
+    .then((hash) => {
+        const body = {name, email, hash}
+        // return createUser(name, email, hash)
+        return createUser(body)
+        .then((newUser) => {
+            res.json({token: tokenForUser(newUser) })
+        })
+        .catch((err) => {
+            res.json({error: 'Error saving user to database'})
+        })
+    })
+    .catch((err) => {
+        return next(err)
+    })
+}  
 
 const createReview = async (req, res) => {
     try {
@@ -234,48 +272,6 @@ const deleteBook = async (req, res) => {
         return res.status(500).send(error.message);
     }
 }
-
-const jwt = require('jwt-simple')
-const config = require('../config/config.json')
-const bcrypt = require('bcrypt')
-
-const tokenForUser = (user) => {
-    const timestamp = new Date().getTime()
-    // how do I get a user object in here
-    console.log("user", user)
-    return jwt.encode({sub: user.id, iat: timestamp}, config.secret)
-}
-
-const signIn = (req, res, next) => {
-    // console.log("got to signin", req.user)
-    res.send({ token: tokenForUser(req.user) })
-}
-
-const signUp = (req, res, next) => {
-
-    const {name, email, password} = req.body
-    const saltRounds = 12
-
-    if(!email || !password) {
-        res.status(422).send({error: 'You must provide both an email and password'})
-    }
-    // see if user exists with given email address
-    bcrypt.hash(password, saltRounds)
-    .then((hash) => {
-        const body = {name, email, hash}
-        // return createUser(name, email, hash)
-        return createUser(body)
-        .then((newUser) => {
-            res.json({token: tokenForUser(newUser) })
-        })
-        .catch((err) => {
-            res.json({error: 'Error saving user to database'})
-        })
-    })
-    .catch((err) => {
-        return next(err)
-    })
-}  
 
 module.exports = {
     createUser,
