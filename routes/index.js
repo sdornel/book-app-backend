@@ -3,6 +3,7 @@ const controllers = require('../controllers')
 const router = Router();
 
 const passport = require('passport')
+const passportService = require('../services/passport')
 const requireSignIn = passport.authenticate('jwt', {session: false})
 
 router.get('/', (req, res) => res.send('This is root!'))
@@ -13,7 +14,9 @@ router.get('/', (req, res) => res.send('This is root!'))
 
 router.post('/sign-up', controllers.signUp)
 router.get('/sign-up', controllers.signIn)
+
 router.get('/sign-in', controllers.signIn)
+router.post('/sign-in', requireSignIn, controllers.signIn)
 
 // router.get('/sign-in', (req, res) => {
     // var json_data = {"name":"amita","pass":"12345"};
@@ -21,7 +24,6 @@ router.get('/sign-in', controllers.signIn)
     // res.render('authentication/sign-in')
 // })
 
-router.post('/sign-in', requireSignIn, controllers.signIn)
 
 
 router.get('/users', controllers.getAllUsers)

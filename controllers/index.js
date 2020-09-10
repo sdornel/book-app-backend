@@ -98,14 +98,16 @@ const deleteUser = async (req, res) => {
 const tokenForUser = (user) => {
     const timestamp = new Date().getTime()
     // how do I get a user object in here
-    // console.log("user", config.secret)
+    console.log("user", config.secret)
     return jwt.encode({sub: user.id, iat: timestamp}, config.secret)
 }
 
 const signIn = (req, res, next) => {
-    console.log("got to signin", req.body, req.user, req.query)
+    // console.log("got to signin", req.body, req.user, req.query)
+    console.log("got to signin", req.body)
     // res.send({ token: tokenForUser(req.user) })
-    res.send({ token: tokenForUser(req.query) })
+    // res.send({ token: tokenForUser(req.query) })
+    res.send({ token: tokenForUser(req.body) })
 }
 
 const signUp = (req, res, next) => {
@@ -121,6 +123,7 @@ const signUp = (req, res, next) => {
     .then((hash) => {
         const body = {name, email, hash}
         // return createUser(name, email, hash)
+        console.log(body)
         return createUser(body)
         .then((newUser) => {
             res.json({token: tokenForUser(newUser) })

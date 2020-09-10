@@ -1,9 +1,9 @@
 const passport = require('passport')
-const config = require('../config')
+const config = require('../config/config.json')
 const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
 // might need verifyUser in below line
-const {getUserById} = require('../controllers/index')
+const {getUserById, verifyUser} = require('../controllers/index')
 const LocalStrategy = require('passport-local')
 const bcrypt = require('bcrypt')
 
@@ -11,9 +11,9 @@ const bcrypt = require('bcrypt')
 
 const localOptions = {usernameField: 'email'}
 
-const localOptions = new LocalStrategy(localOptions, (email, password, done) => {
+const localLogin = new LocalStrategy(localOptions, (email, password, done) => {
     // return verifyUser(email)
-    return getUserById(email)
+    return verifyUser(email)
     .then((validUser) => {
         bcrypt.compare(password, validUser.password)
         .then((validPassword) => {
