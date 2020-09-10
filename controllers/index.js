@@ -102,7 +102,7 @@ const tokenForUser = (user) => {
 }
 
 const signIn = (req, res, next) => {
-    console.log("got to signin", req.body, req.user, req.query)
+    // console.log("got to signin", req.body, req.user, req.query)
     // res.send({ token: tokenForUser(req.user) })
     res.send({ token: tokenForUser(req.query) })
 }

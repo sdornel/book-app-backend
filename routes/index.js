@@ -12,6 +12,7 @@ router.get('/', (req, res) => res.send('This is root!'))
 // })
 
 router.post('/sign-up', controllers.signUp)
+router.get('/sign-up', controllers.signIn)
 router.get('/sign-in', controllers.signIn)
 
 // router.get('/sign-in', (req, res) => {
