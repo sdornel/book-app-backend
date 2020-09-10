@@ -241,11 +241,13 @@ const bcrypt = require('bcrypt')
 
 const tokenForUser = (user) => {
     const timestamp = new Date().getTime()
-    debugger
+    // how do I get a user object in here
+    console.log("user", user)
     return jwt.encode({sub: user.id, iat: timestamp}, config.secret)
 }
 
 const signIn = (req, res, next) => {
+    // console.log("got to signin", req.user)
     res.send({ token: tokenForUser(req.user) })
 }
 

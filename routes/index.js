@@ -7,17 +7,18 @@ const requireSignIn = passport.authenticate('jwt', {session: false})
 
 router.get('/', (req, res) => res.send('This is root!'))
 
-router.get('/sign-up', (req, res) => {
-    res.send('authentication/sign-up')
-})
+// router.get('/sign-up', (req, res) => {
+//     // res.render('authentication/sign-up')
+// })
 
-router.post('sign-up', controllers.signUp)
+router.post('/sign-up', controllers.signUp)
+router.get('/sign-in', controllers.signIn)
 
-router.get('/sign-in', (req, res) => {
+// router.get('/sign-in', (req, res) => {
     // var json_data = {"name":"amita","pass":"12345"};
     // res.send(json_data)
-    res.send('authentication/sign-in')
-})
+    // res.render('authentication/sign-in')
+// })
 
 router.post('sign-in', requireSignIn, controllers.signIn)
 
