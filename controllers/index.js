@@ -234,8 +234,8 @@ const deleteBook = async (req, res) => {
 }
 
 const jwt = require('jwt-simple')
-const config = require('../../config')
-const {createUser} = require('./index')
+const config = require('../config/config.json')
+// const {createUser} = require('./index')
 const bcrypt = require('bcrypt')
 
 const tokenForUser = (user) => {
