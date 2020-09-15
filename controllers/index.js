@@ -1,28 +1,34 @@
 const { User, Review, Book } = require('../models');
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy;
-const jwt = require('jwt-simple')
+// const jwt = require('jwt-simple')
+const jwt = require('jsonwebtoken');
+const passportJWT = require('passport-jwt');
+let ExtractJwt = passportJWT.ExtractJwt;
+let JwtStrategy = passportJWT.Strategy;
 const config = require('../config/config.json')
 const bcrypt = require('bcrypt')
 
-passport.use(new LocalStrategy(
-    function(email, password, done) {
-        console.log("above localstrategy", user)
-        User.findOne({ email: email }, function (err, user) {
-            console.log("localstrategy", user)
-            if (err) { return done(err); }
-            if (!user) {
-            return done(null, false, { message: 'Incorrect email.' });
-            }
-            if (!user.validPassword(password)) {
-            return done(null, false, { message: 'Incorrect password.' });
-            }
-            return done(null, user);
-        });
-    }
-));
+let jwtOptions = {};
+jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+// jwtOptions.secretOrKey = 'wowwow';
+jwtOptions.secretOrKey = config.secret;
+
+// lets create our strategy for web token
+let strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
+  console.log('payload received', jwt_payload);
+  let user = getUserById({ id: jwt_payload.id });
+  if (user) {
+    next(null, user);
+  } else {
+    next(null, false);
+  }
+});
+// use the strategy
+passport.use(strategy);
 
 const createUser = async (req, res) => {
+    console.log("DFDLJF", req.body) // undefined
     try {
         const user = await User.create(req.body);
         return res.status(201).json({
@@ -102,52 +108,87 @@ const tokenForUser = (user) => {
     return jwt.encode({sub: user.id, iat: timestamp}, config.secret)
 }
 
-const signIn = (req, res, next) => {
-    // console.log("got to signin", req.body, req.user, req.query)
-    console.log("got to signin", req.body)
-    // res.send({ token: tokenForUser(req.user) })
-    // res.send({ token: tokenForUser(req.query) })
-    res.send({ token: tokenForUser(req.body) })
+const getUser = async obj => {
+    return await User.findOne({
+    where: obj,
+  });
+};
+
+const signIn = async (req, res, next) => {
+    const { email, password } = req.body;
+    if (email && password) {
+      // we get the user with the name and save the resolved promise returned
+      let user = await getUser({ email });
+      if (!user) {
+        res.status(401).json({ msg: 'No such user found', user });
+      }
+      console.log("USER.PASSWORD", user.password) // USER.PASSWORD $2b$12$deJpXZUfs2kQo2DtXoEesuUzZgvtZ4SU2zz0c0G5s.FoV1ETkveFi
+      console.log("PASSWORD", req.body.password) // PASSWORD two
+      bcrypt.compare(req.body.password, user.password, function(err, results) {
+        if (err){
+          // handle error
+          return res.json({message: "Decryption error"})
+        }
+        if (results) {
+          // Send JWT
+          let payload = { id: user.id };
+          let token = jwt.sign(payload, jwtOptions.secretOrKey);
+          res.json({ msg: 'Login successful!', token: token });
+        } else {
+          // response is OutgoingMessage object that server response http request
+          return res.json({success: false, message: 'Password is incorrect'});
+        }
+      });
+    }
 }
 
 const signUp = (req, res, next) => {
 
-    const {name, email, password} = req.body
+    const { name, email, password } = req.body;
     const saltRounds = 12
-
     if(!email || !password) {
-        res.status(422).send({error: 'You must provide both an email and password'})
+      res.status(422).send({error: 'You must provide both an email and password'})
     }
-    // see if user exists with given email address
     bcrypt.hash(password, saltRounds)
     .then((hash) => {
-        const body = {name, email, hash}
-        // return createUser(name, email, hash)
-        console.log(body)
-        return createUser(body)
-        .then((newUser) => {
-            console.log("129", newUser)
-            res.json({token: tokenForUser(newUser) })
-        })
-        .catch((err) => {
-            res.json({error: 'Error saving user to database'})
-        })
+        // const password = hash
+        req.body.password = hash
+        // console.log(name, email, password)
+    //   createUser({ name, email, password }).then(user =>
+    createUser(req, res).then(user =>
+        res.json({ user, msg: 'account created successfully' })
+      )
+      .catch((err) => {
+        console.log("ERROR MESSAGE", err)
+          res.json({error: 'Error saving user to database'})
+      })
     })
-    .catch((err) => {
-        return next(err)
-    })
+
+    // const {name, email, password} = req.body
+    // const saltRounds = 12
+
+    // if(!email || !password) {
+    //     res.status(422).send({error: 'You must provide both an email and password'})
+    // }
+    // // see if user exists with given email address
+    // bcrypt.hash(password, saltRounds)
+    // .then((hash) => {
+    //     const body = {name, email, hash}
+    //     // return createUser(name, email, hash)
+    //     console.log(body)
+    //     return createUser(body)
+    //     .then((newUser) => {
+    //         console.log("129", newUser)
+    //         res.json({token: tokenForUser(newUser) })
+    //     })
+    //     .catch((err) => {
+    //         res.json({error: 'Error saving user to database'})
+    //     })
+    // })
+    // .catch((err) => {
+    //     return next(err)
+    // })
 }  
-// const createUser = async (req, res) => {
-//     console.log("req", req, "res", res)
-//     try {
-//         const user = await User.create(req.body);
-//         return res.status(201).json({
-//             user,
-//         });
-//     } catch (error) {
-//         return res.status(500).json({ error: error.message })
-//     }
-// }
 
 const verifyUser = async (req, res) => {
     try {
