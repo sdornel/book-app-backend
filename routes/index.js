@@ -15,7 +15,7 @@ router.post('/sign-in', controllers.signIn)
 // protected route
 router.get('/protected', passport.authenticate('jwt', { session: false }), function(req, res) {
     res.json({ msg: 'Congrats! You are seeing this because you are authorized'}); // not working yet
-});
+}); // outputs unauthorized
 
 router.get('/users', controllers.getAllUsers)
 router.get('/users/:id', controllers.getUserById)
