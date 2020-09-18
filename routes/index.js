@@ -4,9 +4,6 @@ const router = Router();
 
 const passport = require('passport')
 
-// const passportService = require('../services/passport')
-// const requireSignIn = passport.authenticate('jwt', {session: false})
-
 router.get('/', (req, res) => res.send('This is root!'))
 
 router.post('/sign-up', controllers.signUp)
@@ -17,14 +14,8 @@ router.post('/sign-in', controllers.signIn)
 
 // protected route
 router.get('/protected', passport.authenticate('jwt', { session: false }), function(req, res) {
-    res.json({ msg: 'Congrats! You are seeing this because you are authorized'});
+    res.json({ msg: 'Congrats! You are seeing this because you are authorized'}); // not working yet
 });
-
-// router.get('/sign-in', (req, res) => {
-    // var json_data = {"name":"amita","pass":"12345"};
-    // res.send(json_data)
-    // res.render('authentication/sign-in')
-// })
 
 router.get('/users', controllers.getAllUsers)
 router.get('/users/:id', controllers.getUserById)

@@ -24,7 +24,7 @@ module.exports = {
         }
       },
       bookId: {
-        type: Sequelize.INTEGER, // this and the above id might be wrongly done
+        type: Sequelize.INTEGER,
         onDelete: 'CASCADE',
         references: {
           model: 'Books',

@@ -1,7 +1,5 @@
 const { User, Review, Book } = require('../models');
 const passport = require('passport')
-const LocalStrategy = require('passport-local').Strategy;
-// const jwt = require('jwt-simple')
 const jwt = require('jsonwebtoken');
 const passportJWT = require('passport-jwt');
 let ExtractJwt = passportJWT.ExtractJwt;
@@ -11,10 +9,9 @@ const bcrypt = require('bcrypt')
 
 let jwtOptions = {};
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-// jwtOptions.secretOrKey = 'wowwow';
 jwtOptions.secretOrKey = config.secret;
 
-// lets create our strategy for web token
+// lets create strategy for web token
 let strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
   console.log('payload received', jwt_payload);
   let user = getUserById({ id: jwt_payload.id });
@@ -101,13 +98,6 @@ const deleteUser = async (req, res) => {
     }
 };
 
-const tokenForUser = (user) => {
-    const timestamp = new Date().getTime()
-    // how do I get a user object in here
-    console.log("user", config.secret)
-    return jwt.encode({sub: user.id, iat: timestamp}, config.secret)
-}
-
 const getUser = async obj => {
     return await User.findOne({
     where: obj,
@@ -122,8 +112,8 @@ const signIn = async (req, res, next) => {
       if (!user) {
         res.status(401).json({ msg: 'No such user found', user });
       }
-      console.log("USER.PASSWORD", user.password) // USER.PASSWORD $2b$12$deJpXZUfs2kQo2DtXoEesuUzZgvtZ4SU2zz0c0G5s.FoV1ETkveFi
-      console.log("PASSWORD", req.body.password) // PASSWORD two
+    //   console.log("USER.PASSWORD", user.password) // USER.PASSWORD $2b$12$deJpXZUfs2kQo2DtXoEesuUzZgvtZ4SU2zz0c0G5s.FoV1ETkveFi
+    //   console.log("PASSWORD", req.body.password) // PASSWORD two
       bcrypt.compare(req.body.password, user.password, function(err, results) {
         if (err){
           // handle error
@@ -143,7 +133,6 @@ const signIn = async (req, res, next) => {
 }
 
 const signUp = (req, res, next) => {
-
     const { name, email, password } = req.body;
     const saltRounds = 12
     if(!email || !password) {
@@ -151,10 +140,7 @@ const signUp = (req, res, next) => {
     }
     bcrypt.hash(password, saltRounds)
     .then((hash) => {
-        // const password = hash
         req.body.password = hash
-        // console.log(name, email, password)
-    //   createUser({ name, email, password }).then(user =>
     createUser(req, res).then(user =>
         res.json({ user, msg: 'account created successfully' })
       )
@@ -163,31 +149,6 @@ const signUp = (req, res, next) => {
           res.json({error: 'Error saving user to database'})
       })
     })
-
-    // const {name, email, password} = req.body
-    // const saltRounds = 12
-
-    // if(!email || !password) {
-    //     res.status(422).send({error: 'You must provide both an email and password'})
-    // }
-    // // see if user exists with given email address
-    // bcrypt.hash(password, saltRounds)
-    // .then((hash) => {
-    //     const body = {name, email, hash}
-    //     // return createUser(name, email, hash)
-    //     console.log(body)
-    //     return createUser(body)
-    //     .then((newUser) => {
-    //         console.log("129", newUser)
-    //         res.json({token: tokenForUser(newUser) })
-    //     })
-    //     .catch((err) => {
-    //         res.json({error: 'Error saving user to database'})
-    //     })
-    // })
-    // .catch((err) => {
-    //     return next(err)
-    // })
 }  
 
 const verifyUser = async (req, res) => {
@@ -322,7 +283,7 @@ const getBookById = async (req, res) => {
 const updateBook = async (req, res) => {
     try {
         const { id } = req.params;
-        const [updated] = await Book.update(req.body, { // check if [] is needed
+        const [updated] = await Book.update(req.body, {
             where: { id: id }
         });
         if (updated) {
@@ -371,5 +332,4 @@ module.exports = {
 
     signUp,
     signIn,
-    verifyUser
 }
