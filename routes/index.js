@@ -2,48 +2,43 @@ const { Router } = require('express')
 const userController = require('../controllers/user')
 const bookController = require('../controllers/book')
 const reviewController = require('../controllers/review')
-const passport = require('passport')
+// import passport and passport-jwt modules
+const passport = require('passport');
 const passportJWT = require('passport-jwt');
-let JwtStrategy = passportJWT.Strategy;
+// ExtractJwt to help extract the token
 let ExtractJwt = passportJWT.ExtractJwt;
+// JwtStrategy which is the strategy for the authentication
+let JwtStrategy = passportJWT.Strategy;
+// bcrypt hashes passwords
 const config = require('../config/config.json')
 
 let jwtOptions = {};
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-// jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme('jwt');
-// jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme('Bearer');
 jwtOptions.secretOrKey = config.secret;
+// jwtOptions.secretOrKey = 'wowwow';
 
-
-const { User } = require('../models'); // maybe delete
-
-// lets create strategy for web token
+// lets create our strategy for web token
 let strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
-    console.log('payload received', jwt_payload);
-    let user = User.getUserById({ id: jwt_payload.id });
-    // let user = getUserById({ id: jwt_payload.id });
-    // let user = User.getUserById( jwt_payload._id );
-    // let user = User.findOne({ id: jwt_payload.id });
-    // let user = getUser({ id: jwt_payload.id });
-    if (user) {
-      next(null, user);
-    } else {
-      next(null, false);
-    }
-  });
+  console.log('payload received', jwt_payload);
+  let user = userController.getUser({ id: jwt_payload.id });
+  if (user) {
+    next(null, user);
+  } else {
+    next(null, false);
+  }
+});
 // use the strategy
 passport.use(strategy);
-
 const router = Router();
-// router.use(passport.initialize());
+// const router = express.Router();
 
 router.get('/', (req, res) => res.send('This is root!'))
 
-router.post('/sign-up', userController.signUp)
-router.get('/sign-up', userController.signUp)
+router.post('/register', userController.register)
+router.get('/register', userController.register)
 
-router.get('/sign-in', userController.signIn)
-router.post('/sign-in', userController.signIn)
+router.get('/login', userController.login)
+router.post('/login', userController.login)
 
 // protected route
 router.get('/protected', passport.authenticate('jwt', { session: false }), function(req, res) {
