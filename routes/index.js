@@ -1,4 +1,5 @@
 const { Router } = require('express')
+const { User, Review } = require('../models');
 const userController = require('../controllers/user')
 const bookController = require('../controllers/book')
 const reviewController = require('../controllers/review')
@@ -18,11 +19,24 @@ jwtOptions.secretOrKey = config.secret;
 // jwtOptions.secretOrKey = 'wowwow';
 
 // lets create our strategy for web token
-let strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
+// let strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
+let strategy = new JwtStrategy(jwtOptions, async function(jwt_payload, next) {
   console.log('payload received', jwt_payload);
-  let user = userController.getUser({ id: jwt_payload.id });
+
+  // let user = userController.getUser(jwt_payload.user.id);
+  // let user = userController.getUser({ id: jwt_payload.user.id });
+  const user = await User.findOne({ // const user is here as promise was pending if taken from userController
+      where: { id: jwt_payload.user.id },
+      include: [
+          {
+              model: Review
+          }
+      ]
+  });
+  console.log(user.dataValues)
   if (user) {
     next(null, user);
+    
   } else {
     next(null, false);
   }
@@ -35,15 +49,24 @@ const router = Router();
 router.get('/', (req, res) => res.send('This is root!'))
 
 router.post('/register', userController.register)
-router.get('/register', userController.register)
-
-router.get('/login', userController.login)
 router.post('/login', userController.login)
 
+// router.get('/register', passport.authenticate('jwt', {session: false}), userController.register)
+// router.get('/login', passport.authenticate('jwt', {session: false}), userController.login)
+
 // protected route
-router.get('/protected', passport.authenticate('jwt', { session: false }), function(req, res) {
-    res.json({ msg: 'Congrats! You are seeing this because you are authorized'}); // not working yet
+router.get('/protected/', passport.authenticate('jwt', { session: false }), function(req, res) {
+  // let test = userController.getUser
+  // console.log("TEST", test)
+  // router.get('/users/:id', userController.getUserById())
+  res.json({ user: req.user, msg: 'Congrats! You are seeing this because you are authorized'}); // not working yet
 }); // outputs unauthorized
+
+// post '/login', to: 'auth#create'
+// post '/company-login', to: 'auth#company_create'
+
+// get '/login', to: 'users#token_authentication'
+// get '/company-login', to: 'companies#token_authentication'
 
 router.get('/users', userController.getAllUsers)
 router.get('/users/:id', userController.getUserById)
